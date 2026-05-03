@@ -1,0 +1,17 @@
+# ════════════════════════════════════════════════════════════════════════════
+# .htaccess
+# ----------------------------------------------------------------------------
+# Apache rewrite rules. Routes all requests to index.php so our PHP router
+# can handle them. Only used when serving the backend through Apache.
+#
+# In development, we use the PHP built-in server (php -S localhost:8000),
+# which doesn't read this file but routes everything to index.php anyway.
+# ════════════════════════════════════════════════════════════════════════════
+
+RewriteEngine On
+
+# If the requested file or directory exists on disk, serve it directly.
+# Otherwise, route the request to index.php.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]

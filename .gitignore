@@ -1,0 +1,34 @@
+# ── Dependencies ──────────────────────────────────────────────
+node_modules/
+frontend/node_modules/
+
+# ── Build output ──────────────────────────────────────────────
+frontend/dist/
+frontend/build/
+
+# ── Environment files (NEVER commit credentials) ──────────────
+.env
+.env.local
+.env.*.local
+backend/db.local.php
+
+# ── Editor / OS junk ──────────────────────────────────────────
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── Logs ──────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── PHP ───────────────────────────────────────────────────────
+vendor/
+composer.lock
+
+# ── Misc ──────────────────────────────────────────────────────
+.cache/
+.tmp/

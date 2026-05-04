@@ -45,6 +45,28 @@ class SubtaskHandler
             return ['error' => 'Allotted minutes must be greater than zero'];
         }
 
+        // Subtask cannot be scheduled later than the parent task's due date.
+        // We fetch the parent's due_date here; if the parent has no due_date,
+        // there's nothing to enforce.
+        $parentStmt = $this->pdo->prepare(
+            'SELECT due_date FROM tasks WHERE id = :id'
+        );
+        $parentStmt->execute(['id' => $taskId]);
+        $parentDueDate = $parentStmt->fetchColumn();
+
+        if ($parentDueDate !== null && $parentDueDate !== false) {
+            // Compare scheduled_at (DATETIME, "YYYY-MM-DD HH:MM:SS") against
+            // the end of the due date (YYYY-MM-DD 23:59:59). String compare
+            // works because both are in ISO format.
+            $latestAllowed = $parentDueDate . ' 23:59:59';
+            if ($scheduledAt > $latestAllowed) {
+                http_response_code(422);
+                return [
+                    'error' => "Subtask cannot be scheduled after the parent task's due date ($parentDueDate)"
+                ];
+            }
+        }
+
         $stmt = $this->pdo->prepare(
             'INSERT INTO subtasks (task_id, title, scheduled_at, allotted_minutes, position)
              VALUES (:task_id, :title, :scheduled_at, :allotted_minutes, :position)'
@@ -103,6 +125,24 @@ class SubtaskHandler
             'position'         => $position,
             'id'               => $id,
         ]);
+
+        // Same date constraint as in create(): scheduled_at must not be
+        // later than the parent task's due_date.
+        $parentStmt = $this->pdo->prepare(
+            'SELECT due_date FROM tasks WHERE id = :id'
+        );
+        $parentStmt->execute(['id' => $existing['task_id']]);
+        $parentDueDate = $parentStmt->fetchColumn();
+
+        if ($parentDueDate !== null && $parentDueDate !== false) {
+            $latestAllowed = $parentDueDate . ' 23:59:59';
+            if ($scheduledAt > $latestAllowed) {
+                http_response_code(422);
+                return [
+                    'error' => "Subtask cannot be scheduled after the parent task's due date ($parentDueDate)"
+                ];
+            }
+        }
 
         return $this->findOrFail($id);
     }

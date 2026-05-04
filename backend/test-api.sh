@@ -173,6 +173,21 @@ request POST "/tasks/$NEW_TASK_ID/subtasks" \
 assert_response "Returns 422"              422 "$RESP_STATUS" "$RESP_BODY"
 assert_response "Says minutes required"    422 "$RESP_STATUS" "$RESP_BODY" 'Allotted minutes'
 
+# ── POST subtask scheduled after parent due_date ────────────────────────────
+section "POST subtask after parent due date"
+
+# Task 1's due_date is 2026-05-31. Try to schedule a subtask for June.
+request POST "/tasks/1/subtasks" \
+    '{"title":"Too late","scheduled_at":"2026-06-15 10:00:00","allotted_minutes":30}'
+assert_response "Returns 422"              422 "$RESP_STATUS" "$RESP_BODY"
+assert_response "Mentions parent due date" 422 "$RESP_STATUS" "$RESP_BODY" 'after the parent'
+
+# Same date as due_date should be allowed (same-day work is fine)
+request POST "/tasks/1/subtasks" \
+    '{"title":"Just in time","scheduled_at":"2026-05-31 23:00:00","allotted_minutes":30}'
+assert_response "Same-day allowed"         200 "$RESP_STATUS" "$RESP_BODY"
+assert_response "Subtask created"          200 "$RESP_STATUS" "$RESP_BODY" '"title":"Just in time"'
+
 # ── PUT /subtasks/{id} (toggle complete) ────────────────────────────────────
 section "PUT /subtasks/$NEW_SUBTASK_ID (mark complete)"
 

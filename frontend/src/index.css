@@ -22,3 +22,177 @@ html, body {
 #root {
   min-height: 100vh;
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Stage 9 — Minimal form styles. These are placeholders.
+   Stage 13 will replace them with the proper visual design.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* ── Layout containers ────────────────────────────────────────────────── */
+.add-task-form {
+  max-width: 720px;
+  margin: 1.5rem auto;
+  padding: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.add-task-form h2 {
+  margin: 0 0 1rem;
+  font-size: 1.25rem;
+}
+
+.add-task-form h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* ── Form rows ────────────────────────────────────────────────────────── */
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.form-row > span {
+  font-size: 0.875rem;
+  color: #4b5563;
+  font-weight: 500;
+}
+
+.form-row > span > em {
+  color: #dc2626;
+  font-style: normal;
+  margin-left: 2px;
+}
+
+.form-row input,
+.form-row textarea,
+.form-row select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: #ffffff;
+}
+
+.form-row input:focus,
+.form-row textarea:focus,
+.form-row select:focus {
+  outline: 2px solid #6366f1;
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+/* ── Two-column row group on desktop, stack on mobile ────────────────── */
+.form-row-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+@media (max-width: 540px) {
+  .form-row-group {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Subtask section ──────────────────────────────────────────────────── */
+.subtasks-section {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.subtasks-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.subtask-row {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.875rem;
+  margin-bottom: 0.75rem;
+}
+
+.subtask-row-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────────── */
+.btn {
+  padding: 0.55rem 1rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: #4f46e5;
+  color: #ffffff;
+}
+.btn-primary:hover:not(:disabled) {
+  background: #4338ca;
+}
+
+.btn-secondary {
+  background: #ffffff;
+  color: #4f46e5;
+  border-color: #c7d2fe;
+}
+.btn-secondary:hover:not(:disabled) {
+  background: #eef2ff;
+}
+
+.btn-link-danger {
+  background: transparent;
+  border: none;
+  color: #dc2626;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+}
+.btn-link-danger:hover {
+  text-decoration: underline;
+}
+
+/* ── Misc ─────────────────────────────────────────────────────────────── */
+.form-error {
+  color: #dc2626;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  padding: 0.625rem 0.875rem;
+  margin: 0.75rem 0;
+  font-size: 0.9rem;
+}
+
+.muted {
+  color: #6b7280;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.form-actions {
+  margin-top: 1rem;
+}

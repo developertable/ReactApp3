@@ -1,15 +1,27 @@
 // src/App.jsx
 // ─────────────────────────────────────────────────────────────────────────────
-// Root component — Stage 11 development view.
-// Uses TaskList to render Active and Overdue columns.
-// Stage 12 will clean this up further (extracting a header, etc.).
+// Root component for the Task Logger app.
+//
+// Composition:
+//   - useTheme  : manages light/dark preference
+//   - useTasks  : owns all task data + mutation functions
+//   - Header    : title + theme toggle
+//   - AddTaskForm : create new tasks (with subtasks)
+//   - TaskList  : Active and Overdue columns of TaskCards
+//
+// App.jsx is intentionally thin — it just wires hooks to components. All
+// data logic lives in hooks; all UI lives in components.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useTasks } from './hooks/useTasks.js'
+import { useTheme } from './hooks/useTheme.js'
+import Header from './components/Header.jsx'
 import AddTaskForm from './components/AddTaskForm.jsx'
 import TaskList from './components/TaskList.jsx'
 
 export default function App() {
+  const { theme, toggleTheme } = useTheme()
+
   const {
     tasks,
     loading,
@@ -25,7 +37,7 @@ export default function App() {
 
   return (
     <div className="app-container">
-      <h1 className="app-title">Task Logger</h1>
+      <Header theme={theme} onToggleTheme={toggleTheme} />
 
       <AddTaskForm onAdd={addTask} />
 

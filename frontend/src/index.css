@@ -1,53 +1,174 @@
 /* src/index.css */
 /* ──────────────────────────────────────────────────────────────────────────
-   Global reset and base styles.
-   We'll layer the real visual design on top in Stage 13.
+   Task Logger — global styles
+
+   Theming strategy: every color used in the app is defined as a CSS custom
+   property (variable) on :root. Components reference these by name (e.g.
+   var(--text-primary)). The .theme-dark class on <body> overrides the
+   values, swapping the entire palette without touching any component.
    ────────────────────────────────────────────────────────────────────────── */
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+/* ══════════════════════════════════════════════════════════════════════════
+   THEME TOKENS — Light (default)
+   ══════════════════════════════════════════════════════════════════════════ */
+:root {
+  /* Surfaces */
+  --bg-page:        #f7f8fa;
+  --bg-card:        #ffffff;
+  --bg-card-hover:  #fdfdfe;
+  --bg-subtle:      #f9fafb;     /* form sections, subtle hovers */
+  --bg-subtle-2:    #f3f4f6;     /* progress track, count badges */
+
+  /* Borders */
+  --border:         #e5e7eb;
+  --border-strong:  #d1d5db;     /* form inputs, hovered cards */
+  --border-soft:    #f3f4f6;     /* subtle dividers */
+
+  /* Text */
+  --text-primary:   #111827;     /* headings, main content */
+  --text-body:      #1f2937;     /* body copy */
+  --text-muted:     #6b7280;     /* secondary info */
+  --text-soft:      #9ca3af;     /* placeholders, completed strikethrough */
+  --text-label:     #4b5563;     /* form labels */
+  --text-section:   #374151;     /* section titles */
+
+  /* Brand / accent */
+  --accent:         #4f46e5;
+  --accent-hover:   #4338ca;
+  --accent-soft:    #6366f1;     /* progress bar fill, checkbox accent */
+  --accent-bg:      #eef2ff;     /* hover backgrounds, secondary buttons */
+  --accent-border:  #c7d2fe;
+  --accent-text:    #4338ca;     /* on accent-bg surfaces */
+
+  /* Status — priority */
+  --priority-low-bg:     #f1f5f9;
+  --priority-low-text:   #475569;
+  --priority-med-bg:     #e0e7ff;
+  --priority-med-text:   #4338ca;
+  --priority-high-bg:    #fee2e2;
+  --priority-high-text:  #b91c1c;
+
+  /* Status — days-left badges */
+  --days-ok-bg:       #ecfdf5;
+  --days-ok-text:     #047857;
+  --days-soon-bg:     #fef3c7;
+  --days-soon-text:   #92400e;
+  --days-overdue-bg:  #fef3c7;
+  --days-overdue-text:#92400e;
+
+  /* Errors / danger */
+  --danger:         #dc2626;
+  --danger-strong:  #b91c1c;
+  --danger-bg:      #fef2f2;
+  --danger-border:  #fecaca;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.06);
+
+  /* Misc */
+  --focus-ring:     #6366f1;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   GLOBAL RESET
+   ══════════════════════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; }
 
 html, body {
   margin: 0;
   padding: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
                Roboto, Oxygen, Ubuntu, sans-serif;
-  background: #f7f8fa;
-  color: #1f2937;
+  background: var(--bg-page);
+  color: var(--text-body);
+  transition: background 0.25s ease, color 0.25s ease;
 }
 
-#root {
-  min-height: 100vh;
+#root { min-height: 100vh; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   APP LAYOUT
+   ══════════════════════════════════════════════════════════════════════════ */
+.app-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
 }
 
-/* ──────────────────────────────────────────────────────────────────────────
-   Stage 9 — Minimal form styles. These are placeholders.
-   Stage 13 will replace them with the proper visual design.
-   ────────────────────────────────────────────────────────────────────────── */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.5rem 0 1.25rem;
+  padding: 0 0.25rem;
+}
 
-/* ── Layout containers ────────────────────────────────────────────────── */
+.app-title {
+  margin: 0;
+  font-size: 1.75rem;
+  color: var(--text-primary);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.task-list-section { margin-top: 2rem; }
+
+.section-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+  color: var(--text-section);
+  font-weight: 600;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   THEME TOGGLE BUTTON
+   ══════════════════════════════════════════════════════════════════════════ */
+.theme-toggle {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  width: 2.4rem;
+  height: 2.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.05rem;
+  line-height: 1;
+  color: var(--text-muted);
+  transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.2s;
+  font-family: inherit;
+}
+
+.theme-toggle:hover {
+  background: var(--bg-subtle);
+  border-color: var(--border-strong);
+  color: var(--accent);
+  transform: rotate(15deg);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ADD TASK FORM
+   ══════════════════════════════════════════════════════════════════════════ */
 .add-task-form {
   max-width: 720px;
   margin: 1.5rem auto;
   padding: 1.5rem;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-md);
 }
 
 .add-task-form h2 {
   margin: 0 0 1rem;
   font-size: 1.25rem;
+  color: var(--text-primary);
 }
 
-.add-task-form h3 {
-  margin: 0;
-  font-size: 1rem;
-}
+.add-task-form h3 { margin: 0; font-size: 1rem; color: var(--text-primary); }
 
 /* ── Form rows ────────────────────────────────────────────────────────── */
 .form-row {
@@ -59,12 +180,12 @@ html, body {
 
 .form-row > span {
   font-size: 0.875rem;
-  color: #4b5563;
+  color: var(--text-label);
   font-weight: 500;
 }
 
 .form-row > span > em {
-  color: #dc2626;
+  color: var(--danger);
   font-style: normal;
   margin-left: 2px;
 }
@@ -73,22 +194,25 @@ html, body {
 .form-row textarea,
 .form-row select {
   padding: 0.5rem 0.75rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-strong);
   border-radius: 6px;
   font-size: 0.95rem;
   font-family: inherit;
-  background: #ffffff;
+  background: var(--bg-card);
+  color: var(--text-body);
+  min-width: 0;
+  max-width: 100%;
 }
 
 .form-row input:focus,
 .form-row textarea:focus,
 .form-row select:focus {
-  outline: 2px solid #6366f1;
+  outline: 2px solid var(--focus-ring);
   outline-offset: 1px;
   border-color: transparent;
 }
 
-/* ── Two-column row group on desktop, stack on mobile ────────────────── */
+/* ── Two-column row group ────────────────────────────────────────────── */
 .form-row-group {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -96,16 +220,14 @@ html, body {
 }
 
 @media (max-width: 540px) {
-  .form-row-group {
-    grid-template-columns: 1fr;
-  }
+  .form-row-group { grid-template-columns: 1fr; }
 }
 
-/* ── Subtask section ──────────────────────────────────────────────────── */
+/* ── Subtask section in AddTaskForm ──────────────────────────────────── */
 .subtasks-section {
   margin-top: 1.25rem;
   padding-top: 1.25rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border);
 }
 
 .subtasks-header {
@@ -116,8 +238,8 @@ html, body {
 }
 
 .subtask-row {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 0.875rem;
   margin-bottom: 0.75rem;
@@ -130,7 +252,9 @@ html, body {
   margin-bottom: 0.5rem;
 }
 
-/* ── Buttons ──────────────────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════════
+   BUTTONS
+   ══════════════════════════════════════════════════════════════════════════ */
 .btn {
   padding: 0.55rem 1rem;
   border-radius: 6px;
@@ -142,193 +266,47 @@ html, body {
   transition: background 0.15s, border-color 0.15s;
 }
 
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .btn-primary {
-  background: #4f46e5;
+  background: var(--accent);
   color: #ffffff;
 }
-.btn-primary:hover:not(:disabled) {
-  background: #4338ca;
-}
+.btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
 
 .btn-secondary {
-  background: #ffffff;
-  color: #4f46e5;
-  border-color: #c7d2fe;
+  background: var(--bg-card);
+  color: var(--accent-text);
+  border-color: var(--accent-border);
 }
-.btn-secondary:hover:not(:disabled) {
-  background: #eef2ff;
-}
-
-.btn-link-danger {
-  background: transparent;
-  border: none;
-  color: #dc2626;
-  font-size: 0.85rem;
-  cursor: pointer;
-  padding: 0.25rem 0.5rem;
-}
-.btn-link-danger:hover {
-  text-decoration: underline;
-}
-
-/* ── Misc ─────────────────────────────────────────────────────────────── */
-.form-error {
-  color: #dc2626;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 6px;
-  padding: 0.625rem 0.875rem;
-  margin: 0.75rem 0;
-  font-size: 0.9rem;
-}
-
-.muted {
-  color: #6b7280;
-  font-size: 0.9rem;
-  font-style: italic;
-}
-
-.form-actions {
-  margin-top: 1rem;
-}
-
-/* ──────────────────────────────────────────────────────────────────────────
-   Stage 10 — TaskCard styles
-   ────────────────────────────────────────────────────────────────────────── */
-
-.task-card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 1.125rem 1.25rem;
-  margin: 0.75rem 0;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-  transition: box-shadow 0.18s, border-color 0.18s;
-}
-
-.task-card:hover {
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-  border-color: #d1d5db;
-}
-
-/* ── Header ─────────────────────────────────────────────────────────── */
-.task-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
-  margin-bottom: 0.875rem;
-}
-
-.task-card-title-block {
-  flex: 1;
-  min-width: 0;  /* enables text-overflow on long titles */
-}
-
-.task-card-title {
-  margin: 0 0 0.25rem;
-  font-size: 1.05rem;
-  color: #111827;
-  font-weight: 600;
-  word-break: break-word;
-}
-
-.task-card-description {
-  margin: 0;
-  font-size: 0.875rem;
-  color: #6b7280;
-  line-height: 1.4;
-}
-
-.task-card-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  align-items: flex-end;
-  flex-shrink: 0;
-}
-
-/* ── Badges (priority and days-left) ────────────────────────────────── */
-.badge {
-  display: inline-block;
-  padding: 0.18rem 0.55rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: capitalize;
-  white-space: nowrap;
-}
-
-.badge-priority-low      { background: #f1f5f9; color: #475569; }
-.badge-priority-medium   { background: #e0e7ff; color: #4338ca; }
-.badge-priority-high     { background: #fee2e2; color: #b91c1c; }
-
-.badge-neutral           { background: #f3f4f6; color: #6b7280; }
-.badge-ok                { background: #ecfdf5; color: #047857; }
-.badge-soon              { background: #fef3c7; color: #92400e; }
-.badge-overdue           { background: #fef3c7; color: #92400e; font-weight: 600; }
-
-/* ── Progress bar ───────────────────────────────────────────────────── */
-.task-card-progress {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.875rem;
-}
-
-.progress-bar-track {
-  flex: 1;
-  height: 8px;
-  background: #f3f4f6;
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.progress-bar-fill {
-  height: 100%;
-  background: #6366f1;
-  border-radius: 999px;
-  transition: width 0.4s ease-out;
-}
-
-.progress-bar-label {
-  font-size: 0.78rem;
-  color: #6b7280;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;  /* numbers same width = no jitter */
-}
-
-/* ── Action row ─────────────────────────────────────────────────────── */
-.task-card-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 0.875rem;
-}
+.btn-secondary:hover:not(:disabled) { background: var(--accent-bg); }
 
 .btn-link {
   background: transparent;
   border: none;
   padding: 0.25rem 0;
-  color: #4f46e5;
+  color: var(--accent);
   cursor: pointer;
   font-family: inherit;
   font-size: inherit;
 }
-.btn-link:hover {
-  text-decoration: underline;
+.btn-link:hover { text-decoration: underline; }
+
+.btn-link-danger {
+  background: transparent;
+  border: none;
+  color: var(--danger);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  font-family: inherit;
 }
+.btn-link-danger:hover { text-decoration: underline; }
 
 .btn-link-danger-active {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #b91c1c;
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  color: var(--danger-strong);
   border-radius: 6px;
   padding: 0.3rem 0.7rem;
   font-size: 0.85rem;
@@ -343,81 +321,158 @@ html, body {
   to   { opacity: 0.6; }
 }
 
-/* ── Subtasks placeholder section ──────────────────────────────────── */
-.task-card-subtasks {
-  margin-top: 0.875rem;
-  padding-top: 0.875rem;
-  border-top: 1px solid #f3f4f6;
+/* ══════════════════════════════════════════════════════════════════════════
+   FORM ERROR + MUTED HELPERS
+   ══════════════════════════════════════════════════════════════════════════ */
+.form-error {
+  color: var(--danger-strong);
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  border-radius: 6px;
+  padding: 0.625rem 0.875rem;
+  margin: 0.75rem 0;
+  font-size: 0.9rem;
 }
 
-.subtask-placeholder {
+.muted {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.form-actions { margin-top: 1rem; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TASK CARD
+   ══════════════════════════════════════════════════════════════════════════ */
+.task-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.125rem 1.25rem;
+  margin: 0.75rem 0;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.18s, border-color 0.18s, background 0.25s;
+}
+
+.task-card:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border-strong);
+}
+
+.task-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 0.875rem;
+}
+
+.task-card-title-block { flex: 1; min-width: 0; }
+
+.task-card-title {
+  margin: 0 0 0.25rem;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.task-card-description {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.task-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+/* ── Badges ──────────────────────────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.badge-priority-low      { background: var(--priority-low-bg);  color: var(--priority-low-text); }
+.badge-priority-medium   { background: var(--priority-med-bg);  color: var(--priority-med-text); }
+.badge-priority-high     { background: var(--priority-high-bg); color: var(--priority-high-text); }
+
+.badge-neutral           { background: var(--bg-subtle-2);     color: var(--text-muted); }
+.badge-ok                { background: var(--days-ok-bg);      color: var(--days-ok-text); }
+.badge-soon              { background: var(--days-soon-bg);    color: var(--days-soon-text); }
+.badge-overdue           { background: var(--days-overdue-bg); color: var(--days-overdue-text); font-weight: 600; }
+
+/* ── Progress bar ────────────────────────────────────────────────────── */
+.task-card-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.875rem;
+}
+
+.progress-bar-track {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-subtle-2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--accent-soft);
+  border-radius: 999px;
+  transition: width 0.4s ease-out;
+}
+
+.progress-bar-label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Action row ──────────────────────────────────────────────────────── */
+.task-card-actions {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #f9fafb;
-  font-size: 0.9rem;
-}
-.subtask-placeholder:last-child { border-bottom: none; }
-
-/* ── Mobile responsive tweaks ──────────────────────────────────────── */
-@media (max-width: 540px) {
-  .task-card-header {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  .task-card-meta {
-    flex-direction: row;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-  .subtask-placeholder {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.15rem;
-  }
+  gap: 0.75rem;
+  font-size: 0.875rem;
 }
 
-/* ──────────────────────────────────────────────────────────────────────────
-   Stage 10 — Container layout
-   ────────────────────────────────────────────────────────────────────────── */
-
-.app-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 1rem;
+.task-card-action-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
-.app-title {
-  text-align: center;
-  margin: 0.5rem 0 1.25rem;
-  font-size: 1.75rem;
-  color: #111827;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+/* ══════════════════════════════════════════════════════════════════════════
+   SUBTASK ROWS (display + edit)
+   ══════════════════════════════════════════════════════════════════════════ */
+.task-card-subtasks {
+  margin-top: 0.875rem;
+  padding-top: 0.875rem;
+  border-top: 1px solid var(--border-soft);
 }
-
-.task-list-section {
-  margin-top: 2rem;
-}
-
-.section-title {
-  margin: 0 0 0.75rem;
-  font-size: 1.1rem;
-  color: #374151;
-  font-weight: 600;
-}
-
-/* ──────────────────────────────────────────────────────────────────────────
-   Stage 11 — SubtaskRow styles
-   ────────────────────────────────────────────────────────────────────────── */
 
 .subtask-row-display {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   padding: 0.55rem 0;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--border-soft);
   font-size: 0.92rem;
   transition: opacity 0.2s;
 }
@@ -425,11 +480,9 @@ html, body {
 
 .subtask-row-display.is-complete .subtask-title {
   text-decoration: line-through;
-  color: #9ca3af;
+  color: var(--text-soft);
 }
-.subtask-row-display.is-complete {
-  opacity: 0.7;
-}
+.subtask-row-display.is-complete { opacity: 0.7; }
 
 .subtask-check-label {
   display: flex;
@@ -437,41 +490,42 @@ html, body {
   gap: 0.55rem;
   cursor: pointer;
   flex: 1;
-  min-width: 0;  /* allow title text to truncate if very long */
+  min-width: 0;
 }
 
 .subtask-checkbox {
   width: 1.05rem;
   height: 1.05rem;
   cursor: pointer;
-  accent-color: #6366f1;
+  accent-color: var(--accent-soft);
   flex-shrink: 0;
 }
 
-.subtask-title {
-  word-break: break-word;
-  color: #1f2937;
-}
+.subtask-title { word-break: break-word; color: var(--text-body); }
 
 .subtask-meta {
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 0.8rem;
   flex-shrink: 0;
   white-space: nowrap;
 }
 
-.subtask-meta-divider {
-  color: #d1d5db;
+.subtask-meta-divider { color: var(--border-strong); }
+
+.subtask-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  flex-shrink: 0;
 }
 
-.subtask-delete {
+.subtask-edit, .subtask-delete {
   background: transparent;
   border: none;
-  color: #9ca3af;
-  font-size: 1.3rem;
+  color: var(--text-soft);
   line-height: 1;
   width: 1.6rem;
   height: 1.6rem;
@@ -483,9 +537,17 @@ html, body {
   transition: background 0.15s, color 0.15s;
   font-family: inherit;
 }
+
+.subtask-edit { font-size: 0.95rem; }
+.subtask-edit:hover {
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+.subtask-delete { font-size: 1.3rem; }
 .subtask-delete:hover {
-  background: #fef2f2;
-  color: #dc2626;
+  background: var(--danger-bg);
+  color: var(--danger);
 }
 
 @media (max-width: 540px) {
@@ -495,15 +557,85 @@ html, body {
   }
   .subtask-meta {
     width: 100%;
-    padding-left: 1.6rem;  /* indent under the checkbox */
+    padding-left: 1.6rem;
     font-size: 0.78rem;
   }
+  .subtask-actions { margin-left: auto; }
 }
 
-/* ──────────────────────────────────────────────────────────────────────────
-   Stage 11 — TaskList two-column layout
-   ────────────────────────────────────────────────────────────────────────── */
+/* ── Subtask edit row ────────────────────────────────────────────────── */
+.subtask-row-editing {
+  display: block !important;
+  padding: 0.75rem !important;
+  background: var(--bg-subtle);
+  border-radius: 6px;
+  margin: 0.25rem -0.5rem;
+}
 
+.edit-subtask-form { padding: 0.25rem 0; }
+
+.subtask-row-editing .form-row-group {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+@media (max-width: 720px) {
+  .subtask-row-editing .form-row-group { grid-template-columns: 1fr; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ADD-SUBTASK BUTTON
+   ══════════════════════════════════════════════════════════════════════════ */
+.add-subtask-button {
+  display: block;
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.55rem 0.875rem;
+  background: transparent;
+  border: 1px dashed var(--border-strong);
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.add-subtask-button:hover {
+  background: var(--bg-subtle);
+  border-color: var(--text-muted);
+  color: var(--accent);
+  border-style: solid;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   EDIT TASK FORM (inside a task card)
+   ══════════════════════════════════════════════════════════════════════════ */
+.edit-task-form { padding: 0.25rem 0; }
+
+.edit-form-heading {
+  margin: 0 0 0.875rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.edit-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.875rem;
+}
+
+@media (max-width: 540px) {
+  .edit-form-actions { flex-direction: column-reverse; }
+  .edit-form-actions .btn { width: 100%; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TASK LIST — TWO-COLUMN ACTIVE / OVERDUE LAYOUT
+   ══════════════════════════════════════════════════════════════════════════ */
 .task-list-columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -517,15 +649,10 @@ html, body {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  /* On mobile, show overdue FIRST so urgent items aren't hidden below the fold */
-  .task-column-overdue {
-    order: -1;
-  }
+  .task-column-overdue { order: -1; }
 }
 
-.task-column {
-  min-width: 0;  /* prevent grid blowout on long task titles */
-}
+.task-column { min-width: 0; }
 
 .column-header {
   display: flex;
@@ -537,21 +664,18 @@ html, body {
 
 .column-title {
   margin: 0;
-  font-size: 1rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--text-section);
   letter-spacing: 0.02em;
   text-transform: uppercase;
   font-size: 0.78rem;
 }
 
-.task-column-overdue .column-title {
-  color: #92400e;  /* muted brown to match the overdue badge */
-}
+.task-column-overdue .column-title { color: var(--days-overdue-text); }
 
 .column-count {
-  background: #f3f4f6;
-  color: #6b7280;
+  background: var(--bg-subtle-2);
+  color: var(--text-muted);
   border-radius: 999px;
   padding: 0.1rem 0.55rem;
   font-size: 0.78rem;
@@ -560,157 +684,73 @@ html, body {
 }
 
 .column-count-overdue {
-  background: #fef3c7;
-  color: #92400e;
+  background: var(--days-overdue-bg);
+  color: var(--days-overdue-text);
 }
 
-/* ──────────────────────────────────────────────────────────────────────────
-   Stage 11.5c — EditTaskForm and edit-mode styles
-   ────────────────────────────────────────────────────────────────────────── */
 
-.edit-task-form {
-  /* Sits inside a TaskCard, so no card chrome of its own */
-  padding: 0.25rem 0;
+/* ══════════════════════════════════════════════════════════════════════════
+   DARK THEME — applied when <body class="theme-dark"> is set
+   ══════════════════════════════════════════════════════════════════════════ */
+.theme-dark {
+  /* Surfaces */
+  --bg-page:        #0f172a;
+  --bg-card:        #1e293b;
+  --bg-card-hover:  #283449;
+  --bg-subtle:      #1a2335;
+  --bg-subtle-2:    #2a3548;
+
+  /* Borders */
+  --border:         #334155;
+  --border-strong:  #475569;
+  --border-soft:    #283449;
+
+  /* Text */
+  --text-primary:   #f1f5f9;
+  --text-body:      #e2e8f0;
+  --text-muted:     #94a3b8;
+  --text-soft:      #64748b;
+  --text-label:     #cbd5e1;
+  --text-section:   #cbd5e1;
+
+  /* Brand / accent (slightly brighter on dark for contrast) */
+  --accent:         #818cf8;
+  --accent-hover:   #a5b4fc;
+  --accent-soft:    #818cf8;
+  --accent-bg:      #312e81;
+  --accent-border:  #4338ca;
+  --accent-text:    #c7d2fe;
+
+  /* Priority — softer hues that read on dark */
+  --priority-low-bg:     #334155;
+  --priority-low-text:   #cbd5e1;
+  --priority-med-bg:     #312e81;
+  --priority-med-text:   #c7d2fe;
+  --priority-high-bg:    #7f1d1d;
+  --priority-high-text:  #fecaca;
+
+  /* Days-left / overdue */
+  --days-ok-bg:       #064e3b;
+  --days-ok-text:     #a7f3d0;
+  --days-soon-bg:     #78350f;
+  --days-soon-text:   #fde68a;
+  --days-overdue-bg:  #78350f;
+  --days-overdue-text:#fde68a;
+
+  /* Errors */
+  --danger:         #f87171;
+  --danger-strong:  #fca5a5;
+  --danger-bg:      #7f1d1d;
+  --danger-border:  #991b1b;
+
+  /* Shadows are softer on dark — less halo */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 2px 8px rgba(0, 0, 0, 0.5);
+
+  /* Focus */
+  --focus-ring:     #a5b4fc;
 }
 
-.edit-form-heading {
-  margin: 0 0 0.875rem;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: #6b7280;
-  font-weight: 600;
-}
-
-.edit-form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  margin-top: 0.875rem;
-}
-
-/* Group Edit + Delete on the right of the action row */
-.task-card-action-group {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-@media (max-width: 540px) {
-  .edit-form-actions {
-    flex-direction: column-reverse;  /* primary action on top on mobile */
-  }
-  .edit-form-actions .btn {
-    width: 100%;
-  }
-}
-
-/* ──────────────────────────────────────────────────────────────────────────
-   Stage 11.5d — EditSubtaskForm + edit/delete action group
-   ────────────────────────────────────────────────────────────────────────── */
-
-/* When the row is in edit mode, override the flex display so the form
-   takes the full width of the row instead of being squeezed alongside
-   other elements. */
-.subtask-row-editing {
-  display: block !important;
-  padding: 0.75rem 0 !important;
-  background: #fafafa;
-  border-radius: 6px;
-  margin: 0.25rem -0.5rem;
-  padding-left: 0.75rem !important;
-  padding-right: 0.75rem !important;
-}
-
-.edit-subtask-form {
-  padding: 0.25rem 0;
-}
-
-/* Group edit + delete buttons next to each other */
-.subtask-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.15rem;
-  flex-shrink: 0;
-}
-
-.subtask-edit {
-  background: transparent;
-  border: none;
-  color: #9ca3af;
-  font-size: 0.95rem;
-  line-height: 1;
-  width: 1.6rem;
-  height: 1.6rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-  font-family: inherit;
-}
-.subtask-edit:hover {
-  background: #eef2ff;
-  color: #4f46e5;
-}
-
-@media (max-width: 540px) {
-  .subtask-actions {
-    /* Move actions to the right of the meta row, not below */
-    margin-left: auto;
-  }
-}
-
-/* ──────────────────────────────────────────────────────────────────────────
-   Stage 11.5e — Add subtask button
-   ────────────────────────────────────────────────────────────────────────── */
-
-.add-subtask-button {
-  display: block;
-  width: 100%;
-  margin-top: 0.5rem;
-  padding: 0.55rem 0.875rem;
-  background: transparent;
-  border: 1px dashed #d1d5db;
-  border-radius: 6px;
-  color: #6b7280;
-  font-size: 0.875rem;
-  font-family: inherit;
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
-}
-
-.add-subtask-button:hover {
-  background: #f9fafb;
-  border-color: #9ca3af;
-  color: #4f46e5;
-  border-style: solid;
-}
-
-/* ──────────────────────────────────────────────────────────────────────────
-   Stage 11.5e — bugfix: keep edit-subtask form compact when nested in a
-   narrow task card column
-   ────────────────────────────────────────────────────────────────────────── */
-
-/* Inside a subtask edit row, the form-row-group should always allow its
-   children to shrink and never overflow the parent row. */
-.subtask-row-editing .form-row-group {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-}
-
-/* When the row is really cramped, stack the two fields. */
-@media (max-width: 720px) {
-  .subtask-row-editing .form-row-group {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Defensive: number/date inputs inside form rows should never blow past
-   their column. min-width: 0 lets flex/grid actually shrink them. */
-.form-row input,
-.form-row select,
-.form-row textarea {
-  min-width: 0;
-  max-width: 100%;
-}
+/* Tweak the checkbox accent color in dark mode for visibility */
+.theme-dark .subtask-checkbox { accent-color: var(--accent-soft); }

@@ -226,6 +226,32 @@ assert_response "Parent now gives 404"     404 "$RESP_STATUS" "$RESP_BODY"
 request PUT "/subtasks/$NEW_SUBTASK_ID" '{"completed":0}'
 assert_response "Subtask cascaded away"    404 "$RESP_STATUS" "$RESP_BODY"
 
+# ── PUT /tasks/{id} cascade validation ──────────────────────────────────────
+# Task 1's due_date is 2026-05-31, with subtasks scheduled May 5 through May 8.
+# Try to move due_date to 2026-05-06 — should fail because subtasks 4 and 5
+# are scheduled May 7 and May 8.
+section "PUT /tasks/1 with bad due_date"
+
+request PUT /tasks/1 '{"due_date":"2026-05-06"}'
+assert_response "Returns 422"              422 "$RESP_STATUS" "$RESP_BODY"
+assert_response "Mentions due date move"   422 "$RESP_STATUS" "$RESP_BODY" 'Cannot move due date'
+assert_response "Mentions reschedule"      422 "$RESP_STATUS" "$RESP_BODY" 'Reschedule'
+
+# Same field NOT changed — no cascade check should fire
+request PUT /tasks/1 '{"title":"Renamed task"}'
+assert_response "Update without due_date"  200 "$RESP_STATUS" "$RESP_BODY"
+assert_response "Title was updated"        200 "$RESP_STATUS" "$RESP_BODY" '"title":"Renamed task"'
+
+# Move due_date FORWARD (later) — always safe
+request PUT /tasks/1 '{"due_date":"2026-12-31"}'
+assert_response "Move due_date forward"    200 "$RESP_STATUS" "$RESP_BODY"
+assert_response "New due_date applied"     200 "$RESP_STATUS" "$RESP_BODY" '"due_date":"2026-12-31"'
+
+# Clear due_date entirely (set to null) — should always be allowed
+request PUT /tasks/1 '{"due_date":null}'
+assert_response "Clear due_date"           200 "$RESP_STATUS" "$RESP_BODY"
+assert_response "due_date is now null"     200 "$RESP_STATUS" "$RESP_BODY" '"due_date":null'
+
 # ── Unknown route ───────────────────────────────────────────────────────────
 section "Unknown route"
 

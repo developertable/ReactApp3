@@ -563,3 +563,154 @@ html, body {
   background: #fef3c7;
   color: #92400e;
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Stage 11.5c — EditTaskForm and edit-mode styles
+   ────────────────────────────────────────────────────────────────────────── */
+
+.edit-task-form {
+  /* Sits inside a TaskCard, so no card chrome of its own */
+  padding: 0.25rem 0;
+}
+
+.edit-form-heading {
+  margin: 0 0 0.875rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.edit-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.875rem;
+}
+
+/* Group Edit + Delete on the right of the action row */
+.task-card-action-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+@media (max-width: 540px) {
+  .edit-form-actions {
+    flex-direction: column-reverse;  /* primary action on top on mobile */
+  }
+  .edit-form-actions .btn {
+    width: 100%;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Stage 11.5d — EditSubtaskForm + edit/delete action group
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* When the row is in edit mode, override the flex display so the form
+   takes the full width of the row instead of being squeezed alongside
+   other elements. */
+.subtask-row-editing {
+  display: block !important;
+  padding: 0.75rem 0 !important;
+  background: #fafafa;
+  border-radius: 6px;
+  margin: 0.25rem -0.5rem;
+  padding-left: 0.75rem !important;
+  padding-right: 0.75rem !important;
+}
+
+.edit-subtask-form {
+  padding: 0.25rem 0;
+}
+
+/* Group edit + delete buttons next to each other */
+.subtask-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  flex-shrink: 0;
+}
+
+.subtask-edit {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  font-size: 0.95rem;
+  line-height: 1;
+  width: 1.6rem;
+  height: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  font-family: inherit;
+}
+.subtask-edit:hover {
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+@media (max-width: 540px) {
+  .subtask-actions {
+    /* Move actions to the right of the meta row, not below */
+    margin-left: auto;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Stage 11.5e — Add subtask button
+   ────────────────────────────────────────────────────────────────────────── */
+
+.add-subtask-button {
+  display: block;
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.55rem 0.875rem;
+  background: transparent;
+  border: 1px dashed #d1d5db;
+  border-radius: 6px;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.add-subtask-button:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  color: #4f46e5;
+  border-style: solid;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Stage 11.5e — bugfix: keep edit-subtask form compact when nested in a
+   narrow task card column
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Inside a subtask edit row, the form-row-group should always allow its
+   children to shrink and never overflow the parent row. */
+.subtask-row-editing .form-row-group {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+/* When the row is really cramped, stack the two fields. */
+@media (max-width: 720px) {
+  .subtask-row-editing .form-row-group {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Defensive: number/date inputs inside form rows should never blow past
+   their column. min-width: 0 lets flex/grid actually shrink them. */
+.form-row input,
+.form-row select,
+.form-row textarea {
+  min-width: 0;
+  max-width: 100%;
+}

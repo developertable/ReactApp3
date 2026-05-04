@@ -217,6 +217,103 @@ export function useTasks() {
     }
   }, [tasks])
 
+  /**
+   * Update fields on an existing task.
+   *
+   * Optimistic: applies the changes to local state immediately, then sends
+   * the API call. On failure, rolls back to the previous state and exposes
+   * the error.
+   *
+   * Note: the backend may reject the update (e.g. moving due_date earlier
+   * would orphan subtasks). When that happens we re-throw so the caller —
+   * typically EditTaskForm — can surface the error message in its UI.
+   *
+   * @param {number} id   - task id
+   * @param {Object} body - any subset of { title, description, priority, due_date }
+   */
+  const updateTaskFields = useCallback(async (id, body) => {
+    const previousTasks = tasks
+
+    // Optimistic local update — merge new fields into the matching task
+    setTasks(currentTasks =>
+      currentTasks.map(task =>
+        task.id === id ? { ...task, ...body } : task
+      )
+    )
+
+    try {
+      // Server returns the canonical updated task with subtasks + progress.
+      // Replace our optimistic version with the authoritative one.
+      const updated = await taskApi.updateTask(id, body)
+      setTasks(currentTasks =>
+        currentTasks.map(task => (task.id === id ? updated : task))
+      )
+      return updated
+    } catch (err) {
+      // Roll back, propagate, set error
+      setTasks(previousTasks)
+      setError(err.message)
+      throw err
+    }
+  }, [tasks])
+
+  /**
+   * Update fields on an existing subtask.
+   *
+   * Optimistic: applies changes to local state, recomputes progress on the
+   * parent task, then sends the API call. Rolls back on failure.
+   *
+   * @param {Object} subtask - the existing subtask (must have id, task_id)
+   * @param {Object} body    - any subset of { title, scheduled_at,
+   *                                          allotted_minutes, completed }
+   */
+  const updateSubtaskFields = useCallback(async (subtask, body) => {
+    const previousTasks = tasks
+
+    // Optimistic update with progress recalculation on the parent
+    setTasks(currentTasks =>
+      currentTasks.map(task => {
+        if (task.id !== subtask.task_id) return task
+
+        const updatedSubtasks = task.subtasks.map(st =>
+          st.id === subtask.id ? { ...st, ...body } : st
+        )
+
+        const completedCount = updatedSubtasks.filter(st => st.completed).length
+        const newProgress = updatedSubtasks.length > 0
+          ? Math.round((completedCount / updatedSubtasks.length) * 100)
+          : 0
+
+        return {
+          ...task,
+          subtasks: updatedSubtasks,
+          progress_percent: newProgress,
+        }
+      })
+    )
+
+    try {
+      const updated = await subtaskApi.updateSubtask(subtask.id, body)
+      // Splice the canonical server response into local state
+      setTasks(currentTasks =>
+        currentTasks.map(task => {
+          if (task.id !== subtask.task_id) return task
+          return {
+            ...task,
+            subtasks: task.subtasks.map(st =>
+              st.id === subtask.id ? updated : st
+            ),
+          }
+        })
+      )
+      return updated
+    } catch (err) {
+      setTasks(previousTasks)
+      setError(err.message)
+      throw err
+    }
+  }, [tasks])
+
   // ── What the hook returns ───────────────────────────────────────────────
   return {
     tasks,
@@ -227,6 +324,8 @@ export function useTasks() {
     toggleSubtask,
     removeTask,
     removeSubtask,
+    updateTask: updateTaskFields,
+    updateSubtask: updateSubtaskFields,
     reload,
   }
 }

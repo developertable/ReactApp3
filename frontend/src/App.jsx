@@ -15,9 +15,12 @@ export default function App() {
     loading,
     error,
     addTask,
+    addSubtask,
     toggleSubtask,
     removeTask,
     removeSubtask,
+    updateTask,
+    updateSubtask,
   } = useTasks()
 
   return (
@@ -40,6 +43,9 @@ export default function App() {
             onToggleSubtask={toggleSubtask}
             onRemoveSubtask={removeSubtask}
             onRemoveTask={removeTask}
+            onEditTask={updateTask}
+            onEditSubtask={updateSubtask}
+            onAddSubtask={addSubtask}
           />
         )}
       </section>

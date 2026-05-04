@@ -1,21 +1,8 @@
-// src/components/SubtaskRow.jsx
-// ─────────────────────────────────────────────────────────────────────────────
-// SubtaskRow — renders a single subtask with an interactive checkbox and a
-// delete button. Used inside TaskCard's expanded section.
-//
-// Props:
-//   - subtask  : the subtask object (must have id, title, scheduled_at,
-//                allotted_minutes, completed)
-//   - onToggle : (subtask) => void — called when the checkbox is clicked
-//   - onRemove : (subtask) => void — called when delete is clicked
-// ─────────────────────────────────────────────────────────────────────────────
 
-// ── Helpers (pure, no React) ────────────────────────────────────────────────
+import { useState } from 'react'
+import EditSubtaskForm from './EditSubtaskForm.jsx'
 
 /**
- * Format a MySQL datetime ("YYYY-MM-DD HH:MM:SS") into a friendly local
- * string like "May 5, 9:00 AM".
- *
  * Uses Intl.DateTimeFormat which respects the user's locale (e.g. uses
  * 24-hour time in regions where that's the default).
  */
@@ -49,10 +36,38 @@ function formatDuration(minutes) {
 
 // ── Component ───────────────────────────────────────────────────────────────
 
-export default function SubtaskRow({ subtask, onToggle, onRemove }) {
+export default function SubtaskRow({ subtask, parentTask, onToggle, onRemove, onEdit }) {
   // The completed flag comes back from MySQL as 0 or 1; convert to a boolean
   // so the checkbox's `checked` prop behaves correctly.
   const isComplete = Boolean(subtask.completed)
+  const [editing, setEditing] = useState(false)
+
+  /**
+   * Save handler — calls the parent's onEdit, closes the form on success.
+   * Re-throws on failure so EditSubtaskForm can show the error message.
+   */
+  async function handleSave(body) {
+    try {
+      await onEdit(subtask, body)
+      setEditing(false)
+    } catch (err) {
+      throw err
+    }
+  }
+
+  // ── Render ─────────────────────────────────────────────────────────────
+  if (editing) {
+    return (
+      <div className="subtask-row-display subtask-row-editing">
+        <EditSubtaskForm
+          subtask={subtask}
+          parentTask={parentTask}
+          onSave={handleSave}
+          onCancel={() => setEditing(false)}
+        />
+      </div>
+    )
+  }
 
   return (
     <div className={`subtask-row-display ${isComplete ? 'is-complete' : ''}`}>
@@ -79,15 +94,27 @@ export default function SubtaskRow({ subtask, onToggle, onRemove }) {
         </span>
       </span>
 
-      {/* ── Delete button ────────────────────────────────────────── */}
-      <button
-        type="button"
-        className="subtask-delete"
-        onClick={() => onRemove(subtask)}
-        aria-label={`Delete subtask "${subtask.title}"`}
-      >
-        ×
-      </button>
+      {/* ── Action buttons ───────────────────────────────────────── */}
+      <div className="subtask-actions">
+        <button
+          type="button"
+          className="subtask-edit"
+          onClick={() => setEditing(true)}
+          aria-label={`Edit subtask "${subtask.title}"`}
+          title="Edit"
+        >
+          ✎
+        </button>
+        <button
+          type="button"
+          className="subtask-delete"
+          onClick={() => onRemove(subtask)}
+          aria-label={`Delete subtask "${subtask.title}"`}
+          title="Delete"
+        >
+          ×
+        </button>
+      </div>
     </div>
   )
 }

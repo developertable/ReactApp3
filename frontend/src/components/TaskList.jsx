@@ -22,7 +22,11 @@ export default function TaskList({
   onToggleSubtask,
   onRemoveSubtask,
   onRemoveTask,
+  onEditTask,
+  onEditSubtask,
+  onAddSubtask,
 }) {
+
   // Split into the two buckets. groupTasks is pure, so this runs every
   // render but it's cheap (just one pass through tasks plus two sorts).
   const { active, overdue } = groupTasks(tasks)
@@ -46,6 +50,9 @@ export default function TaskList({
               onToggleSubtask={onToggleSubtask}
               onRemoveSubtask={onRemoveSubtask}
               onRemoveTask={onRemoveTask}
+              onEditTask={onEditTask}
+              onEditSubtask={onEditSubtask}
+              onAddSubtask={onAddSubtask}
             />
           ))
         )}
@@ -68,6 +75,9 @@ export default function TaskList({
               onToggleSubtask={onToggleSubtask}
               onRemoveSubtask={onRemoveSubtask}
               onRemoveTask={onRemoveTask}
+              onEditTask={onEditTask}
+              onEditSubtask={onEditSubtask}
+              onAddSubtask={onAddSubtask}
             />
           ))
         )}

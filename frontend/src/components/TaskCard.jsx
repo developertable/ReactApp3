@@ -23,20 +23,10 @@
 
 import { useState } from 'react'
 import SubtaskRow from './SubtaskRow.jsx'
+import EditTaskForm from './EditTaskForm.jsx'
+import EditSubtaskForm from './EditSubtaskForm.jsx'
 
-// ── Helpers (pure functions, no React) ──────────────────────────────────────
 
-/**
- * Compute how many days are left until a due date (relative to today).
- * Returns:
- *   - null if there's no due date
- *   - 0 if the due date is today
- *   - positive integer for future dates ("3 days left")
- *   - negative integer for past dates ("-2" means 2 days overdue)
- *
- * Uses just the date portion (no time of day) to avoid edge cases where
- * "due today" flips to "overdue" at midnight.
- */
 function daysUntil(dueDate) {
   if (!dueDate) return null
 
@@ -91,15 +81,15 @@ export default function TaskCard({
   onToggleSubtask,
   onRemoveSubtask,
   onRemoveTask,
+  onEditTask,
+  onEditSubtask,
+  onAddSubtask,
 }) {
-  // Whether the subtasks section is expanded. Default open if the task has
-  // any subtasks — the user is most likely to want to see them.
-  const [expanded, setExpanded] = useState(task.subtasks.length > 0)
 
-  // Confirm-before-deleting state. First click sets this true and changes
-  // the button label to "Confirm delete?". Second click actually deletes.
-  // Resets after a few seconds if the user doesn't follow through.
+  const [expanded, setExpanded] = useState(task.subtasks.length > 0)
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const [addingSubtask, setAddingSubtask] = useState(false)
 
   const days       = daysUntil(task.due_date)
   const daysLabel  = formatDaysLeft(days)
@@ -122,65 +112,112 @@ export default function TaskCard({
     onRemoveTask(task.id)
   }
 
+  /**
+   * Save handler — calls the parent's onEditTask, closes the form on success.
+   * The form catches and displays errors, so we re-throw here so it can.
+   */
+  async function handleSaveEdit(body) {
+    try {
+      await onEditTask(task.id, body)
+      setEditing(false)  // close edit mode on success
+    } catch (err) {
+      // Re-throw so EditTaskForm can show the error message
+      throw err
+    }
+  }
+
+  /**
+   * Save handler for adding a brand-new subtask. Calls the parent's
+   * onAddSubtask, closes the form on success.
+   */
+  async function handleSaveNewSubtask(body) {
+    try {
+      await onAddSubtask(task.id, body)
+      setAddingSubtask(false)
+    } catch (err) {
+      throw err  // re-throw so EditSubtaskForm shows the error inline
+    }
+  }
+
   // ── Render ─────────────────────────────────────────────────────────────
 
   return (
     <article className="task-card">
-      {/* ── Header row: title + priority + due date badge + delete ──── */}
-      <header className="task-card-header">
-        <div className="task-card-title-block">
-          <h3 className="task-card-title">{task.title}</h3>
-          {task.description && (
-            <p className="task-card-description">{task.description}</p>
-          )}
-        </div>
 
-        <div className="task-card-meta">
-          <span className={`badge badge-priority badge-priority-${task.priority}`}>
-            {task.priority}
-          </span>
-          <span className={`badge ${daysCss}`}>{daysLabel}</span>
-        </div>
-      </header>
+      {editing ? (
+        // ── EDIT MODE ─────────────────────────────────────────────────
+        <EditTaskForm
+          task={task}
+          onSave={handleSaveEdit}
+          onCancel={() => setEditing(false)}
+        />
+      ) : (
+        <>
+          {/* ── Header row: title + priority + due date badge ──────── */}
+          <header className="task-card-header">
+            <div className="task-card-title-block">
+              <h3 className="task-card-title">{task.title}</h3>
+              {task.description && (
+                <p className="task-card-description">{task.description}</p>
+              )}
+            </div>
 
-      {/* ── Progress bar ────────────────────────────────────────────── */}
-      <div className="task-card-progress">
-        <div className="progress-bar-track">
-          <div
-            className="progress-bar-fill"
-            style={{ width: `${task.progress_percent}%` }}
-            // ARIA attributes for screen readers
-            role="progressbar"
-            aria-valuenow={task.progress_percent}
-            aria-valuemin={0}
-            aria-valuemax={100}
-          />
-        </div>
-        <span className="progress-bar-label">
-          {task.progress_percent}% · {completedCount}/{totalCount} subtasks
-        </span>
-      </div>
+            <div className="task-card-meta">
+              <span className={`badge badge-priority badge-priority-${task.priority}`}>
+                {task.priority}
+              </span>
+              <span className={`badge ${daysCss}`}>{daysLabel}</span>
+            </div>
+          </header>
 
-      {/* ── Expand / collapse + delete row ─────────────────────────── */}
-      <div className="task-card-actions">
-        <button
-          type="button"
-          className="btn-link"
-          onClick={() => setExpanded(prev => !prev)}
-          aria-expanded={expanded}
-        >
-          {expanded ? '▾ Hide subtasks' : '▸ Show subtasks'}
-          {totalCount > 0 && ` (${totalCount})`}
-        </button>
+          {/* ── Progress bar ────────────────────────────────────────── */}
+          <div className="task-card-progress">
+            <div className="progress-bar-track">
+              <div
+                className="progress-bar-fill"
+                style={{ width: `${task.progress_percent}%` }}
+                role="progressbar"
+                aria-valuenow={task.progress_percent}
+                aria-valuemin={0}
+                aria-valuemax={100}
+              />
+            </div>
+            <span className="progress-bar-label">
+              {task.progress_percent}% · {completedCount}/{totalCount} subtasks
+            </span>
+          </div>
 
-        <button
-          type="button"
-          className={confirmDelete ? 'btn-link-danger-active' : 'btn-link-danger'}
-          onClick={handleDeleteClick}
-        >
-          {confirmDelete ? 'Confirm delete?' : 'Delete'}
-        </button>
-      </div>
+          {/* ── Expand/collapse + edit + delete row ─────────────────── */}
+          <div className="task-card-actions">
+            <button
+              type="button"
+              className="btn-link"
+              onClick={() => setExpanded(prev => !prev)}
+              aria-expanded={expanded}
+            >
+              {expanded ? '▾ Hide subtasks' : '▸ Show subtasks'}
+              {totalCount > 0 && ` (${totalCount})`}
+            </button>
+
+            <div className="task-card-action-group">
+              <button
+                type="button"
+                className="btn-link"
+                onClick={() => setEditing(true)}
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                className={confirmDelete ? 'btn-link-danger-active' : 'btn-link-danger'}
+                onClick={handleDeleteClick}
+              >
+                {confirmDelete ? 'Confirm delete?' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* ── Subtasks (visible only when expanded) ──────────────────── */}
       {expanded && (
@@ -192,10 +229,32 @@ export default function TaskCard({
               <SubtaskRow
                 key={subtask.id}
                 subtask={subtask}
+                parentTask={task}
                 onToggle={onToggleSubtask}
                 onRemove={onRemoveSubtask}
+                onEdit={onEditSubtask}
               />
             ))
+          )}
+
+          {/* ── Add-subtask affordance ─────────────────────────────────── */}
+          {addingSubtask ? (
+            <div className="subtask-row-display subtask-row-editing">
+              <EditSubtaskForm
+                mode="add"
+                parentTask={task}
+                onSave={handleSaveNewSubtask}
+                onCancel={() => setAddingSubtask(false)}
+              />
+            </div>
+          ) : (
+            <button
+              type="button"
+              className="add-subtask-button"
+              onClick={() => setAddingSubtask(true)}
+            >
+              + Add subtask
+            </button>
           )}
         </div>
       )}

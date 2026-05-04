@@ -151,6 +151,45 @@ class TaskHandler
             ? (!empty($body['due_date']) ? $body['due_date'] : null)
             : $existing['due_date'];
 
+        // ── Cascade validation ────────────────────────────────────────
+        // If the due_date is being changed, check that no existing subtask
+        // is scheduled past the new due_date. If any are, refuse the update
+        // and tell the caller which subtask(s) are offending so they can
+        // reschedule those first.
+        //
+        // We only run this check if due_date is actually changing AND the
+        // new value is not null (a NULL due_date means "no constraint").
+        if ($dueDate !== null && $dueDate !== $existing['due_date']) {
+            $stmt = $this->pdo->prepare(
+                'SELECT id, title, scheduled_at
+                 FROM subtasks
+                 WHERE task_id = :task_id AND scheduled_at > :latest_allowed
+                 ORDER BY scheduled_at ASC'
+            );
+            $stmt->execute([
+                'task_id'        => $id,
+                'latest_allowed' => $dueDate . ' 23:59:59',
+            ]);
+            $offenders = $stmt->fetchAll();
+
+            if (!empty($offenders)) {
+                http_response_code(422);
+                // Build a list of "Title (scheduled YYYY-MM-DD)" strings
+                $names = array_map(
+                    fn($s) => $s['title'] . ' (scheduled ' . substr($s['scheduled_at'], 0, 10) . ')',
+                    $offenders
+                );
+                return [
+                    'error' => sprintf(
+                        'Cannot move due date to %s — %d subtask(s) are scheduled after that: %s. Reschedule those first.',
+                        $dueDate,
+                        count($offenders),
+                        implode('; ', $names)
+                    ),
+                ];
+            }
+        }
+
         $stmt = $this->pdo->prepare(
             'UPDATE tasks
              SET title = :title, description = :description,

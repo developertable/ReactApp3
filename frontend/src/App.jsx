@@ -1,13 +1,13 @@
 // src/App.jsx
 // ─────────────────────────────────────────────────────────────────────────────
-// Root component — Stage 10 development view.
-// Renders the AddTaskForm and a list of TaskCards. Stage 11 will introduce
-// the proper Active/Overdue column layout and replace the bare list.
+// Root component — Stage 11 development view.
+// Uses TaskList to render Active and Overdue columns.
+// Stage 12 will clean this up further (extracting a header, etc.).
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useTasks } from './hooks/useTasks.js'
 import AddTaskForm from './components/AddTaskForm.jsx'
-import TaskCard from './components/TaskCard.jsx'
+import TaskList from './components/TaskList.jsx'
 
 export default function App() {
   const {
@@ -27,8 +27,6 @@ export default function App() {
       <AddTaskForm onAdd={addTask} />
 
       <section className="task-list-section">
-        <h2 className="section-title">Existing tasks</h2>
-
         {loading && <p className="muted">Loading…</p>}
         {error   && <p className="form-error">Error: {error}</p>}
 
@@ -36,15 +34,14 @@ export default function App() {
           <p className="muted">No tasks yet. Create your first one above!</p>
         )}
 
-        {!loading && !error && tasks.map(task => (
-          <TaskCard
-            key={task.id}
-            task={task}
+        {!loading && !error && tasks.length > 0 && (
+          <TaskList
+            tasks={tasks}
             onToggleSubtask={toggleSubtask}
             onRemoveSubtask={removeSubtask}
             onRemoveTask={removeTask}
           />
-        ))}
+        )}
       </section>
     </div>
   )

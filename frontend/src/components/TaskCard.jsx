@@ -22,6 +22,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useState } from 'react'
+import SubtaskRow from './SubtaskRow.jsx'
 
 // ── Helpers (pure functions, no React) ──────────────────────────────────────
 
@@ -187,16 +188,13 @@ export default function TaskCard({
           {totalCount === 0 ? (
             <p className="muted">No subtasks for this task.</p>
           ) : (
-            // Stage 11 will replace these placeholders with <SubtaskRow />
             task.subtasks.map(subtask => (
-              <div key={subtask.id} className="subtask-placeholder">
-                <span>
-                  {subtask.completed ? '✓' : '○'} {subtask.title}
-                </span>
-                <span className="muted" style={{ fontSize: '0.85em' }}>
-                  {subtask.scheduled_at} · {subtask.allotted_minutes} min
-                </span>
-              </div>
+              <SubtaskRow
+                key={subtask.id}
+                subtask={subtask}
+                onToggle={onToggleSubtask}
+                onRemove={onRemoveSubtask}
+              />
             ))
           )}
         </div>

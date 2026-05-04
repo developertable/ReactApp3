@@ -407,3 +407,159 @@ html, body {
   color: #374151;
   font-weight: 600;
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Stage 11 — SubtaskRow styles
+   ────────────────────────────────────────────────────────────────────────── */
+
+.subtask-row-display {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 0.92rem;
+  transition: opacity 0.2s;
+}
+.subtask-row-display:last-child { border-bottom: none; }
+
+.subtask-row-display.is-complete .subtask-title {
+  text-decoration: line-through;
+  color: #9ca3af;
+}
+.subtask-row-display.is-complete {
+  opacity: 0.7;
+}
+
+.subtask-check-label {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  cursor: pointer;
+  flex: 1;
+  min-width: 0;  /* allow title text to truncate if very long */
+}
+
+.subtask-checkbox {
+  width: 1.05rem;
+  height: 1.05rem;
+  cursor: pointer;
+  accent-color: #6366f1;
+  flex-shrink: 0;
+}
+
+.subtask-title {
+  word-break: break-word;
+  color: #1f2937;
+}
+
+.subtask-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #6b7280;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.subtask-meta-divider {
+  color: #d1d5db;
+}
+
+.subtask-delete {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  font-size: 1.3rem;
+  line-height: 1;
+  width: 1.6rem;
+  height: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  font-family: inherit;
+}
+.subtask-delete:hover {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+@media (max-width: 540px) {
+  .subtask-row-display {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .subtask-meta {
+    width: 100%;
+    padding-left: 1.6rem;  /* indent under the checkbox */
+    font-size: 0.78rem;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Stage 11 — TaskList two-column layout
+   ────────────────────────────────────────────────────────────────────────── */
+
+.task-list-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  align-items: flex-start;
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .task-list-columns {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  /* On mobile, show overdue FIRST so urgent items aren't hidden below the fold */
+  .task-column-overdue {
+    order: -1;
+  }
+}
+
+.task-column {
+  min-width: 0;  /* prevent grid blowout on long task titles */
+}
+
+.column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  padding: 0 0.25rem;
+}
+
+.column-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+}
+
+.task-column-overdue .column-title {
+  color: #92400e;  /* muted brown to match the overdue badge */
+}
+
+.column-count {
+  background: #f3f4f6;
+  color: #6b7280;
+  border-radius: 999px;
+  padding: 0.1rem 0.55rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.column-count-overdue {
+  background: #fef3c7;
+  color: #92400e;
+}

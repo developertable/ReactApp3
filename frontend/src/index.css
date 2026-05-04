@@ -33,28 +33,26 @@
   --text-section:   #374151;     /* section titles */
 
   /* Brand / accent */
-  --accent:         #4f46e5;
-  --accent-hover:   #4338ca;
-  --accent-soft:    #6366f1;     /* progress bar fill, checkbox accent */
-  --accent-bg:      #eef2ff;     /* hover backgrounds, secondary buttons */
-  --accent-border:  #c7d2fe;
-  --accent-text:    #4338ca;     /* on accent-bg surfaces */
+  --accent:         #5b6acb;       /* calm blue-violet, less candy */
+  --accent-hover:   #4a5ab8;
+  --accent-soft:    #6e7ad8;       /* progress fills, subtle accents */
+  --accent-bg:      #eff1fb;
+  --accent-border:  #c8cef0;
+  --accent-text:    #4a5ab8;
 
-  /* Status — priority */
   --priority-low-bg:     #f1f5f9;
-  --priority-low-text:   #475569;
-  --priority-med-bg:     #e0e7ff;
-  --priority-med-text:   #4338ca;
-  --priority-high-bg:    #fee2e2;
-  --priority-high-text:  #b91c1c;
+  --priority-low-text:   #64748b;
+  --priority-med-bg:     #eff1fb;
+  --priority-med-text:   #4a5ab8;
+  --priority-high-bg:    #fdecea;       /* soft terracotta, not alarm-red */
+  --priority-high-text:  #b8443a;
 
-  /* Status — days-left badges */
-  --days-ok-bg:       #ecfdf5;
-  --days-ok-text:     #047857;
-  --days-soon-bg:     #fef3c7;
-  --days-soon-text:   #92400e;
-  --days-overdue-bg:  #fef3c7;
-  --days-overdue-text:#92400e;
+  --days-ok-bg:       #f0f9f4;          /* very pale sage */
+  --days-ok-text:     #2f7d5b;
+  --days-soon-bg:     #fdf4e3;          /* warm cream */
+  --days-soon-text:   #8a6520;
+  --days-overdue-bg:  #f5e8d8;          /* dusty amber-brown */
+  --days-overdue-text:#7a4f1d;
 
   /* Errors / danger */
   --danger:         #dc2626;
@@ -69,6 +67,29 @@
 
   /* Misc */
   --focus-ring:     #6366f1;
+
+  /* ── Typography ─────────────────────────────────────────────────── */
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont,
+               'Segoe UI', Roboto, sans-serif;
+
+  /* Size scale (modular, ~1.125 ratio) */
+  --font-xs:   0.75rem;     /* 12px — meta, badges */
+  --font-sm:   0.85rem;     /* 13.6px — labels, secondary */
+  --font-base: 0.95rem;     /* 15.2px — body */
+  --font-md:   1.05rem;     /* 16.8px — card titles */
+  --font-lg:   1.25rem;     /* 20px — section heads */
+  --font-xl:   1.75rem;     /* 28px — app title */
+
+  /* Weight scale */
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semi:   600;
+  --weight-bold:   700;
+
+  /* Line heights */
+  --line-tight:   1.2;
+  --line-snug:    1.4;
+  --line-normal:  1.55;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -79,8 +100,11 @@
 html, body {
   margin: 0;
   padding: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-               Roboto, Oxygen, Ubuntu, sans-serif;
+  font-family: var(--font-sans);
+  font-size: var(--font-base);
+  line-height: var(--line-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   background: var(--bg-page);
   color: var(--text-body);
   transition: background 0.25s ease, color 0.25s ease;
@@ -107,10 +131,11 @@ html, body {
 
 .app-title {
   margin: 0;
-  font-size: 1.75rem;
+  font-size: var(--font-x1);
   color: var(--text-primary);
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-weight: var(--weight-bold);
+  letter-spacing: -0.025em;
+  line-height: var(--line-tight);
 }
 
 .task-list-section { margin-top: 2rem; }
@@ -372,10 +397,12 @@ html, body {
 
 .task-card-title {
   margin: 0 0 0.25rem;
-  font-size: 1.05rem;
+  font-size: var(--font-md);
   color: var(--text-primary);
-  font-weight: 600;
+  font-weight: var(--weight-semi);
   word-break: break-word;
+  letter-spacing: -0.01em;
+  line-height: var(--line-snug);
 }
 
 .task-card-description {
@@ -694,16 +721,16 @@ html, body {
    ══════════════════════════════════════════════════════════════════════════ */
 .theme-dark {
   /* Surfaces */
-  --bg-page:        #0f172a;
-  --bg-card:        #1e293b;
-  --bg-card-hover:  #283449;
-  --bg-subtle:      #1a2335;
-  --bg-subtle-2:    #2a3548;
+  --bg-page:        #0b1120;          
+  --bg-card:        #161e2e;          
+  --bg-card-hover:  #1c2538;
+  --bg-subtle:      #131a29;          
+  --bg-subtle-2:    #1f2a3f;          
 
   /* Borders */
-  --border:         #334155;
-  --border-strong:  #475569;
-  --border-soft:    #283449;
+  --border:         #2a3550;
+  --border-strong:  #3d4d6f;
+  --border-soft:    #1f2a3f;
 
   /* Text */
   --text-primary:   #f1f5f9;
@@ -714,34 +741,31 @@ html, body {
   --text-section:   #cbd5e1;
 
   /* Brand / accent (slightly brighter on dark for contrast) */
-  --accent:         #818cf8;
-  --accent-hover:   #a5b4fc;
-  --accent-soft:    #818cf8;
-  --accent-bg:      #312e81;
-  --accent-border:  #4338ca;
-  --accent-text:    #c7d2fe;
+  --accent:         #8590e0;
+  --accent-hover:   #a3acea;
+  --accent-soft:    #8590e0;
+  --accent-bg:      #2a2f5a;
+  --accent-border:  #4a5ab8;
+  --accent-text:    #c8cef0;
 
-  /* Priority — softer hues that read on dark */
-  --priority-low-bg:     #334155;
+  --priority-low-bg:     #2a3550;
   --priority-low-text:   #cbd5e1;
-  --priority-med-bg:     #312e81;
-  --priority-med-text:   #c7d2fe;
-  --priority-high-bg:    #7f1d1d;
-  --priority-high-text:  #fecaca;
+  --priority-med-bg:     #2a2f5a;
+  --priority-med-text:   #c8cef0;
+  --priority-high-bg:    #4d2a26;
+  --priority-high-text:  #f0a39a;
 
-  /* Days-left / overdue */
-  --days-ok-bg:       #064e3b;
-  --days-ok-text:     #a7f3d0;
-  --days-soon-bg:     #78350f;
-  --days-soon-text:   #fde68a;
-  --days-overdue-bg:  #78350f;
-  --days-overdue-text:#fde68a;
+  --days-ok-bg:       #1d3d2e;
+  --days-ok-text:     #8fd1ad;
+  --days-soon-bg:     #4a3520;
+  --days-soon-text:   #e8c987;
+  --days-overdue-bg:  #4a3520;
+  --days-overdue-text:#e8c987;
 
-  /* Errors */
-  --danger:         #f87171;
-  --danger-strong:  #fca5a5;
-  --danger-bg:      #7f1d1d;
-  --danger-border:  #991b1b;
+  --danger:         #f08e8a;
+  --danger-strong:  #f5a8a4;
+  --danger-bg:      #4d2a26;
+  --danger-border:  #6b3c37;
 
   /* Shadows are softer on dark — less halo */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -754,3 +778,129 @@ html, body {
 
 /* Tweak the checkbox accent color in dark mode for visibility */
 .theme-dark .subtask-checkbox { accent-color: var(--accent-soft); }
+
+
+/* ── Custom checkbox with animated tick ──────────────────────────────── */
+.subtask-checkbox {
+  /* Override the native look */
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 4px;
+  background: var(--bg-card);
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.subtask-checkbox:hover {
+  border-color: var(--accent);
+}
+
+/* When checked, fill with accent and draw a tick */
+.subtask-checkbox:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.subtask-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 0.32rem;
+  top: 0.12rem;
+  width: 0.3rem;
+  height: 0.6rem;
+  border: solid #ffffff;
+  border-width: 0 1.8px 1.8px 0;
+  transform: rotate(45deg);
+  /* The animation: tick draws in via scale + opacity */
+  animation: tick-draw 0.2s ease-out;
+}
+
+@keyframes tick-draw {
+  from {
+    opacity: 0;
+    transform: rotate(45deg) scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(45deg) scale(1);
+  }
+}
+
+/* Focus ring for keyboard users */
+.subtask-checkbox:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* ── Card lift on hover ─────────────────────────────────────────────── */
+.task-card {
+  transition: box-shadow 0.18s ease, border-color 0.18s ease,
+              background 0.25s ease, transform 0.18s ease;
+}
+
+.task-card:hover {
+  transform: translateY(-1px);
+}
+
+/* ── Edit form fade + slide-in ──────────────────────────────────────── */
+.edit-task-form,
+.edit-subtask-form {
+  animation: form-fade-in 0.22s ease-out;
+}
+
+@keyframes form-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Subtle pop when a subtask is added ─────────────────────────────── */
+.subtask-row-display {
+  animation: row-fade-in 0.25s ease-out;
+}
+
+@keyframes row-fade-in {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ── Button press feedback ─────────────────────────────────────────── */
+.btn:active:not(:disabled),
+.btn-link:active,
+.btn-link-danger:active,
+.theme-toggle:active {
+  transform: scale(0.97);
+}
+
+.btn,
+.btn-link,
+.btn-link-danger,
+.theme-toggle {
+  transition: background 0.15s, border-color 0.15s, color 0.15s,
+              transform 0.08s ease-out;
+}
+
+/* ── Respect users who prefer reduced motion ────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
